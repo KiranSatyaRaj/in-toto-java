@@ -23,15 +23,17 @@ public class SimpleSigstoreSigner implements Signer {
         this.result = functionary.sign(payload);
 
         // set keyId
-        X509Certificate certificate = (X509Certificate) (this.result.getCertPath().getCertificates().getFirst());
-        String oid = "1.3.6.1.4.1.57264.1.8";
-        byte[] extensionValue = certificate.getExtensionValue(oid);
-        String issuer = new String(extensionValue, StandardCharsets.UTF_8);
-        this.keyId = issuer.substring(4);
-        Object subAltArr = certificate.getSubjectAlternativeNames().toArray()[0];
-        String subAltName = subAltArr.toString();
-        subAltName = subAltName.substring(4, subAltName.length() - 1);
-        this.keyId = keyId.concat(" " + subAltName);
+        if (!this.result.getCertPath().getCertificates().isEmpty()) {
+            X509Certificate certificate = (X509Certificate) (this.result.getCertPath().getCertificates().get(0));
+            String oid = "1.3.6.1.4.1.57264.1.8";
+            byte[] extensionValue = certificate.getExtensionValue(oid);
+            String issuer = new String(extensionValue, StandardCharsets.UTF_8);
+            this.keyId = "<" + issuer.substring(4) + ">:";
+            Object subAltArr = certificate.getSubjectAlternativeNames().toArray()[0];
+            String subAltName = subAltArr.toString();
+            subAltName = subAltName.substring(4, subAltName.length() - 1);
+            this.keyId = keyId.concat("<" + subAltName + ">");
+        }
 
         this.dsseSignature = result.getDSSESignature();
         return dsseSignature.get().getSignature();
