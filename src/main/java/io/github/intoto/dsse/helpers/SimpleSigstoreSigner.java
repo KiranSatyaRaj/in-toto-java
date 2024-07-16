@@ -28,7 +28,10 @@ public class SimpleSigstoreSigner implements Signer {
             String oid = "1.3.6.1.4.1.57264.1.8";
             byte[] extensionValue = certificate.getExtensionValue(oid);
             String issuer = new String(extensionValue, StandardCharsets.UTF_8);
-            this.keyId = "<" + issuer.substring(4) + ">:";
+            String header = "https://";
+            String provider = issuer.substring(issuer.lastIndexOf("/") + 1);
+            issuer = header + provider;
+            this.keyId = "<" + issuer + ">:";
             Object subAltArr = certificate.getSubjectAlternativeNames().toArray()[0];
             String subAltName = subAltArr.toString();
             subAltName = subAltName.substring(4, subAltName.length() - 1);
