@@ -52,7 +52,7 @@ public class SimpleSigstoreSigner implements Signer {
             String provider = issuer.substring(issuer.lastIndexOf("/") + 1);
             issuer = header + provider;
 
-            this.keyId = "<" + issuer + ">";
+            this.keyId = "<" + issuer + ">:";
             Object sanArray = certificate.getSubjectAlternativeNames().toArray()[0];
             String san = sanArray.toString();
             san = san.substring(4, san.length() - 1);
